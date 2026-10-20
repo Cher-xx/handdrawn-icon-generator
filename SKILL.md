@@ -15,8 +15,8 @@ Create one icon at a time with the image generation tool, using the bundled draw
 4. Call the image generation tool with the selected local reference paths. State that the references define the visual language, not content to copy.
 5. Request a single centered icon, no frame, no text, no watermark, square canvas, and ample breathing room. For built-in image generation, use a perfectly uniform removable chroma-key background that does not occur in the subject; remove it locally after generation.
 6. Inspect the result. Regenerate if it has a photographic look, complex texture, excessive detail, generic vector polish, hard geometry, unwanted text, or weak small-size readability.
-7. Remove the chroma-key background and save the final as RGBA PNG. Make only the area outside the icon transparent; keep the icon body and intended interior regions opaque. Do not deliver the chroma-key source.
-8. Validate transparency before delivery: confirm PNG/RGBA format, alpha value 0 at all four corners, no opaque background rectangle, no green/white fringe, and a nonempty opaque subject. Preserve intentional transparent holes only when the subject requires them.
+7. Remove the chroma-key background and save the final as an actual RGBA PNG file. Make only the area outside the icon transparent; keep the icon body and intended interior regions opaque. Do not deliver the chroma-key source, a flattened preview, or a screenshot.
+8. Validate the delivered file itself, not the chat preview: confirm PNG/RGBA format, alpha value 0 at all four corners, no opaque background rectangle, no green/white fringe, and a nonempty opaque subject. Never rasterize a white background or a gray checkerboard transparency preview into the final image. Preserve intentional transparent holes only when the subject requires them.
 9. Resize a copy to exactly 100×100 using high-quality Lanczos resampling while preserving alpha. Keep the larger transparent PNG when useful.
 10. Use `assets/template.png` as the default numbered-template layout. When a workspace `template.png` is supplied, use that current file instead of the bundled default. Follow the template-composition workflow below before delivery.
 
@@ -42,6 +42,7 @@ Use this structure, adapting the subject-specific details:
 
 - Generate one icon per file unless the user explicitly requests a set.
 - Deliver PNG only. The icon exterior must be transparent like the bundled references; the icon itself must remain opaque. Never deliver a white background, chroma-key background, JPEG, or flattened RGB image.
+- If the host cannot provide a verifiable transparent RGBA PNG download, state that limitation instead of substituting a non-transparent image.
 - Keep subjects recognizable with roughly 1–4 main color regions and only a few interior marks.
 - Add a few restrained, widely recognized semantic details when they are integral to the subject's conventional reading (for example, a Christmas tree may have a star, light snow, and a few ornaments). Do not add arbitrary narrative elements; honor an explicit request for a plain or undecorated subject.
 - Choose conventional subject colors at moderate or low saturation unless the user specifies otherwise; avoid novelty palettes that contradict common visual meaning.
