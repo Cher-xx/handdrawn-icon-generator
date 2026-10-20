@@ -1,6 +1,6 @@
 ---
 name: handdrawn-icon-generator
-description: Generate new raster icons that match Xue Xia's colorful hand-drawn icon set. Use when asked to create, redraw, extend, or make variants of small icons in the style of the bundled 100×100 PNG references, especially for simple objects, food, animals, activities, symbols, or miniature scenes with transparent backgrounds.
+description: Generate new raster icons that match Xue Xia's colorful hand-drawn icon set. Use when asked to create, redraw, extend, or make variants of small icons in the style of the bundled 100×100 PNG references, especially for simple objects, food, animals, activities, symbols, or miniature scenes with transparent backgrounds and numbered-template placement.
 ---
 
 # Hand-drawn Icon Generator
@@ -18,6 +18,19 @@ Create one icon at a time with the image generation tool, using the bundled draw
 7. Remove the chroma-key background and save the final as RGBA PNG. Make only the area outside the icon transparent; keep the icon body and intended interior regions opaque. Do not deliver the chroma-key source.
 8. Validate transparency before delivery: confirm PNG/RGBA format, alpha value 0 at all four corners, no opaque background rectangle, no green/white fringe, and a nonempty opaque subject. Preserve intentional transparent holes only when the subject requires them.
 9. Resize a copy to exactly 100×100 using high-quality Lanczos resampling while preserving alpha. Keep the larger transparent PNG when useful.
+10. Use `assets/template.png` as the default numbered-template layout. When a workspace `template.png` is supplied, use that current file instead of the bundled default. Follow the template-composition workflow below before delivery.
+
+## Template Composition
+
+Use this workflow for every icon unless the user explicitly asks not to use a template.
+
+1. Read the active template file on every run: prefer the workspace `template.png` when supplied; otherwise use `assets/template.png`. Treat its opaque black pixels as the reserved number area; never assume an earlier template's dimensions still apply.
+2. Keep the final icon PNG transparent in the reserved area unless the user explicitly requests a solid template fill. Do not include the black guide shape in the final output.
+3. Place the complete icon at the upper-right by default. Keep a consistent, generous visual scale; do not mechanically shrink the icon just because its bounding box approaches the reserved area.
+4. Test collision with the icon's actual opaque alpha silhouette, not its rectangular bounding box. Allow transparent portions of the icon's bounding box to pass around the reserved area, but never let visible icon pixels cover it.
+5. Uniformly scale and position the whole icon to the largest practical no-collision upper-right placement. Never crop, erase, or split the subject, its key details, or related marks such as raindrops.
+6. If the user asks to inspect number legibility, make a separate preview by placing a dark, readable sample numeral over the reserved region. Keep the delivered production PNG free of the numeral unless requested.
+7. Validate the final output: RGBA PNG; transparent four corners; nonempty icon; and zero overlap between visible icon alpha and the template's reserved mask.
 
 ## Prompt Pattern
 
@@ -30,6 +43,8 @@ Use this structure, adapting the subject-specific details:
 - Generate one icon per file unless the user explicitly requests a set.
 - Deliver PNG only. The icon exterior must be transparent like the bundled references; the icon itself must remain opaque. Never deliver a white background, chroma-key background, JPEG, or flattened RGB image.
 - Keep subjects recognizable with roughly 1–4 main color regions and only a few interior marks.
+- Add a few restrained, widely recognized semantic details when they are integral to the subject's conventional reading (for example, a Christmas tree may have a star, light snow, and a few ornaments). Do not add arbitrary narrative elements; honor an explicit request for a plain or undecorated subject.
+- Choose conventional subject colors at moderate or low saturation unless the user specifies otherwise; avoid novelty palettes that contradict common visual meaning.
 - Match the reference set's handmade inconsistencies; avoid sterile symmetry and pixel-perfect vector edges.
 - Apply dry wax-crayon texture only to outlines. Keep interior fills completely solid, opaque, flat, and texture-free.
 - Make outline width vary visibly with natural hand pressure: thinner during quick passages, heavier at turns and pauses, with asymmetric non-repeating variation. Reject constant-width strokes and uniformly distributed texture.
@@ -45,3 +60,4 @@ Use this structure, adapting the subject-specific details:
 - Use `assets/reference-icons/manifest.md` to choose references by subject family.
 - Use `assets/reference-icons/style_outline_pressure.png` as the primary approved outline reference.
 - Use `assets/reference-icons/style_airbrush_shadow.png` as the approved optional depth/shading reference.
+- Use `assets/template.png` as the bundled default numbered-template layout; a user-supplied workspace `template.png` overrides it.
