@@ -30,8 +30,8 @@ Use this workflow for every icon unless the user explicitly asks not to use a te
 4. Keep `reserved_mask` transparent in the final production PNG. Use the template only as an invisible placement mask: never copy its black guide, checkerboard, digits, or background into the output.
 5. Place the complete icon at the upper-right by default. Scale and position the whole icon to the largest practical no-collision placement; never crop, erase, split, or mechanically over-shrink the subject or related marks such as raindrops.
 6. Compute collision at final output resolution using both alpha channels: an overlap is any pixel where `icon_alpha > 0` and `template_alpha > 0`. Do not test rectangular bounding boxes. Transparent portions of the icon's bounding box may occupy transparent portions of the template's bounding box.
-7. Before delivery, make the icon canvas exactly the active template's dimensions and run `scripts/validate_template_placement.py <icon.png> <template.png>`. Deliver only when it reports `overlap_pixels=0`.
-8. If the user asks to inspect number legibility, make a separate preview by placing a dark, readable sample numeral over the reserved region. Keep the delivered production PNG free of the numeral unless requested.
+7. Before delivery, make the icon canvas exactly the active template's dimensions and run `scripts/validate_template_placement.py <icon.png> <template.png>`. Deliver only when it reports `overlap_pixels=0` from that exact final file; never claim a result that was not executed.
+8. Always export a separate `*_placement_check.png` with `scripts/render_template_check.py <icon.png> <template.png> <check.png>`. It must show the actual final icon over the opaque template mask with a visible `100×100` sample numeral. If the numeral or mask is obscured, reposition the icon and repeat validation. Keep the delivered production PNG free of the mask and numeral.
 
 ## Prompt Pattern
 
