@@ -24,14 +24,14 @@ Create one icon at a time with the image generation tool, using the bundled draw
 
 Use this workflow for every icon unless the user explicitly asks not to use a template.
 
-1. Read the active template file on every run: prefer the workspace `template.png` when supplied; otherwise use `assets/template.png`. Treat its opaque black pixels as the reserved number area; never assume an earlier template's dimensions still apply.
-2. If the host cannot access the active template image, state that it cannot perform template placement; do not invent a coordinate substitute or generate an approximate layout.
-3. Keep the final icon PNG transparent in the reserved area unless the user explicitly requests a solid template fill. Do not include the black guide shape in the final output.
-4. Place the complete icon at the upper-right by default. Keep a consistent, generous visual scale; do not mechanically shrink the icon just because its bounding box approaches the reserved area.
-5. Test collision with the icon's actual opaque alpha silhouette, not its rectangular bounding box. Allow transparent portions of the icon's bounding box to pass around the reserved area, but never let visible icon pixels cover it.
-6. Uniformly scale and position the whole icon to the largest practical no-collision upper-right placement. Never crop, erase, or split the subject, its key details, or related marks such as raindrops.
-7. If the user asks to inspect number legibility, make a separate preview by placing a dark, readable sample numeral over the reserved region. Keep the delivered production PNG free of the numeral unless requested.
-8. Validate the final output: RGBA PNG; transparent four corners; nonempty icon; and zero overlap between visible icon alpha and the template's reserved mask.
+1. Read the active template file on every run: prefer the workspace `template.png` when supplied; otherwise use `assets/template.png`. This image is the **only** authority for placement. Do not derive, state, or use numerical coordinates or a rectangular substitute.
+2. Define `reserved_mask` as every pixel whose template alpha is greater than zero. Treat only that exact pixel shape as reserved; its bounding box, surrounding transparent pixels, and any imagined rectangle are not reserved.
+3. If the host cannot access the active template image, state that it cannot perform template placement. Do not invent a coordinate substitute, approximate layout, or centered fallback.
+4. Keep `reserved_mask` transparent in the final production PNG. Use the template only as an invisible placement mask: never copy its black guide, checkerboard, digits, or background into the output.
+5. Place the complete icon at the upper-right by default. Scale and position the whole icon to the largest practical no-collision placement; never crop, erase, split, or mechanically over-shrink the subject or related marks such as raindrops.
+6. Compute collision at final output resolution using both alpha channels: an overlap is any pixel where `icon_alpha > 0` and `template_alpha > 0`. Do not test rectangular bounding boxes. Transparent portions of the icon's bounding box may occupy transparent portions of the template's bounding box.
+7. Before delivery, make the icon canvas exactly the active template's dimensions and run `scripts/validate_template_placement.py <icon.png> <template.png>`. Deliver only when it reports `overlap_pixels=0`.
+8. If the user asks to inspect number legibility, make a separate preview by placing a dark, readable sample numeral over the reserved region. Keep the delivered production PNG free of the numeral unless requested.
 
 ## Prompt Pattern
 
@@ -44,7 +44,7 @@ Use this structure, adapting the subject-specific details:
 - Generate one icon per file unless the user explicitly requests a set.
 - Deliver PNG only. The icon exterior must be transparent like the bundled references; the icon itself must remain opaque. Never deliver a white background, chroma-key background, JPEG, or flattened RGB image.
 - If the host cannot provide a verifiable transparent RGBA PNG download, state that limitation instead of substituting a non-transparent image.
-- If the host cannot read the template image, state that template placement is unavailable; never silently revert to a centered icon.
+- If the host cannot read the template image or cannot run the required collision validation, state that template placement is unavailable; never silently revert to a centered icon.
 - Keep subjects recognizable with roughly 1–4 main color regions and only a few interior marks.
 - Add a few restrained, widely recognized semantic details when they are integral to the subject's conventional reading (for example, a Christmas tree may have a star, light snow, and a few ornaments). Do not add arbitrary narrative elements; honor an explicit request for a plain or undecorated subject.
 - Choose conventional subject colors at moderate or low saturation unless the user specifies otherwise; avoid novelty palettes that contradict common visual meaning.
